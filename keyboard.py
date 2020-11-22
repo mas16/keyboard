@@ -30,15 +30,15 @@ class Signal:
     time_sig = utils.scale_time(time_signature, utils.tempo)
 
     # Instance attributes
-    def __init__(self, note: list, tempo=utils.tempo,
+    def __init__(self, note, rest, tempo=utils.tempo,
                  amplitude=100, decay=0.5, rate=utils.rate):
         self.tempo = tempo
         self.amplitude = amplitude
         self.decay = decay
         self.rate = rate
         self.dwell = 1 / rate
-        self.frequency = self.frequencies[note[0]]
-        self.acq_time = self.time_sig[note[1]]
+        self.frequency = self.frequencies[note]
+        self.acq_time = self.time_sig[rest]
         self.points = self.acq_time / self.dwell
         self.time_domain = np.linspace(0, self.acq_time, self.points)
         self.signal = None
@@ -57,13 +57,13 @@ class Signal:
 
 
 def generate_tone(note):
-    tone = Signal(note)
+    tone = Signal(note=note[0], rest=note[1])
     tone.generate_signal()
     return tone.real
 
 
 def generate_wave(notes):
-    wave = np.array(0)
+    wave = np.array([])
     for note in notes:
         wave = np.append(wave, generate_tone(note))
     return wave
