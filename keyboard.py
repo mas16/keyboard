@@ -1,36 +1,15 @@
-'''
+"""
 python keyboard
 
 by matt stetz
 2020.11
-'''
+"""
 
 import numpy as np
-import scipy as sp
-import os
-import sys
+import utils
 from scipy.io import wavfile
-from scipy.fftpack import fft
-from pathlib import Path
 from frequencies import frequencies
 from timing import fourfour as time_signature
-
-# Set working directory
-base_path: str = os.getcwd()
-
-bass_file: str = 'tolb.txt'
-treble_file: str = 'tol3.txt'
-
-bass_path: str = Path(base_path, bass_file)
-treble_path: str = Path(base_path, treble_file)
-
-tempo: int = 175
-
-def scale_time(dictionary, tempo=tempo):
-    scale = 120.0 / tempo
-    for key in dictionary.keys():
-        dictionary[key] *= scale
-    return dictionary
 
 
 class SheetMusic:
@@ -46,16 +25,13 @@ class SheetMusic:
 
 
 class Signal:
-
     # Class attributes
     frequencies: dict = frequencies
-
-    # 4/4 as default
-    time_sig = scale_time(time_signature)
+    time_sig = utils.scale_time(time_signature, utils.tempo)
 
     # Instance attributes
-    def __init__(self, note: list, tempo: int,
-                 amplitude=100, decay=0.5, rate=2048):
+    def __init__(self, note: list, tempo=utils.tempo,
+                 amplitude=100, decay=0.5, rate=utils.rate):
         self.tempo = tempo
         self.amplitude = amplitude
         self.decay = decay
@@ -67,8 +43,7 @@ class Signal:
         self.time_domain = np.linspace(0, self.acq_time, self.points)
         self.signal = None
         self.real = None
-        self.complex = None
-
+        self.imaginary = None
 
     def generate_signal(self):
         self.signal = self.amplitude \
@@ -81,21 +56,31 @@ class Signal:
         self.imaginary = np.imag(self.signal)
 
 
-
-music = SheetMusic(path=treble_file)
-notes = music.read_music()
-wave = np.empty(0)
-
-
-def generate_tone(note, tempo=tempo):
-    tone = Signal(note, tempo=tempo)
+def generate_tone(note):
+    tone = Signal(note)
     tone.generate_signal()
     return tone.real
 
 
-for note in notes:
-    wave = np.append(wave, generate_tone(note))
+def generate_wave(notes):
+    wave = np.array(0)
+    for note in notes:
+        wave = np.append(wave, generate_tone(note))
+    return wave
 
-out = os.path.join(base_path, 'test.wav')
 
-wavfile.write(out, 2048, wave)
+def generate_notes(channel):
+    music = SheetMusic(path=channel)
+    notes = music.read_music()
+    return notes
+
+
+def main():
+    treble = generate_wave(generate_notes(utils.treble_path))
+    bass = generate_wave(generate_notes(utils.bass_path))
+    wavfile.write(utils.output_path, utils.rate,
+                  np.column_stack((treble, bass)))
+
+
+if __name__ == '__main__':
+    main()
