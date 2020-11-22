@@ -6,7 +6,7 @@ by matt stetz
 """
 
 import numpy as np
-import utils
+import utils as u
 from scipy.io import wavfile
 from frequencies import frequencies
 from timing import fourfour as time_signature
@@ -27,11 +27,11 @@ class SheetMusic:
 class Signal:
     # Class attributes
     frequencies: dict = frequencies
-    time_sig = utils.scale_time(time_signature, utils.tempo)
+    time_sig = u.scale_time(time_signature, u.tempo)
 
     # Instance attributes
-    def __init__(self, note, rest, tempo=utils.tempo,
-                 amplitude=100, decay=0.5, rate=utils.rate):
+    def __init__(self, note, rest, tempo=u.tempo,
+                 amplitude=100, decay=0.5, rate=u.rate):
         self.tempo = tempo
         self.amplitude = amplitude
         self.decay = decay
@@ -56,16 +56,22 @@ class Signal:
         self.imaginary = np.imag(self.signal)
 
 
-def generate_tone(note):
-    tone = Signal(note=note[0], rest=note[1])
-    tone.generate_signal()
-    return tone.real
+def generate_tone(bar):
+    tones = []
+    for note in bar[0].split('+'):
+        tone = Signal(note=note, rest=bar[1])
+        tone.generate_signal()
+        tones.append(tone.real)
+    if np.array(tones).ndim > 1:
+        tones = np.vstack(tones)
+        tones = np.sum(tones, axis=0)
+    return tones
 
 
-def generate_wave(notes):
+def generate_wave(music):
     wave = np.array([])
-    for note in notes:
-        wave = np.append(wave, generate_tone(note))
+    for bar in music:
+        wave = np.append(wave, generate_tone(bar))
     return wave
 
 
@@ -76,9 +82,9 @@ def generate_notes(channel):
 
 
 def main():
-    treble = generate_wave(generate_notes(utils.treble_path))
-    bass = generate_wave(generate_notes(utils.bass_path))
-    wavfile.write(utils.output_path, utils.rate,
+    treble = generate_wave(generate_notes(u.treble_path))
+    bass = generate_wave(generate_notes(u.bass_path))
+    wavfile.write(u.output_path, u.rate,
                   np.column_stack((treble, bass)))
 
 
