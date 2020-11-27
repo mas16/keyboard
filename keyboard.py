@@ -119,7 +119,7 @@ class Signal:
 
     # Instance attributes
     def __init__(self, note, rest, tempo=u.tempo,
-                 amplitude=100, decay=0.5, rate=u.rate):
+                 amplitude=1, decay=0.5, rate=u.rate):
         self.tempo = tempo
         self.amplitude = amplitude
         self.decay = decay
