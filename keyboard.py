@@ -42,6 +42,7 @@ As of 2020-11-22
 import numpy as np
 import utils as u
 from scipy.io import wavfile
+import scipy.signal as ssg
 from frequencies import frequencies
 from timing import fourfour as time_signature
 
@@ -119,7 +120,7 @@ class Signal:
 
     # Instance attributes
     def __init__(self, note, rest, tempo=u.tempo,
-                 amplitude=100, decay=0.5, rate=u.rate):
+                 amplitude=10, decay=0.5, rate=u.rate):
         self.tempo = tempo
         self.amplitude = amplitude
         self.decay = decay
@@ -132,6 +133,8 @@ class Signal:
         self.signal = None
         self.real = None
         self.imaginary = None
+        self.square = None
+        self.sawtooth = None
 
     def generate_signal(self):
         """
@@ -150,6 +153,31 @@ class Signal:
         self.real = np.real(self.signal)
         self.imaginary = np.imag(self.signal)
 
+    def generate_square(self):
+        """
+        Generate the time domain complex representation of the note
+
+        Assigns the array of complex values to self.signal
+        Assigns the array of real values to self.real
+        Assigns the array of imaginary values to self.imaginary
+        """
+        self.square = ssg.square(2 * np.pi * self.frequency * self.time_domain)
+
+        if self.decay != 0:
+            self.square = self.square * np.exp(self.time_domain*(-self.decay))
+
+    def generate_sawtooth(self):
+        """
+        Generate the time domain complex representation of the note
+
+        Assigns the array of complex values to self.signal
+        Assigns the array of real values to self.real
+        Assigns the array of imaginary values to self.imaginary
+        """
+        self.sawtooth = ssg.sawtooth(2 * np.pi * self.frequency * self.time_domain)
+
+        if self.decay != 0:
+            self.sawtooth = self.sawtooth * np.exp(self.time_domain*(-self.decay))
 
 def generate_tone(bar):
     """
@@ -166,8 +194,8 @@ def generate_tone(bar):
     tones = []
     for note in bar[0].split('+'):
         tone = Signal(note=note, rest=bar[1])
-        tone.generate_signal()
-        tones.append(tone.real)
+        tone.generate_square()
+        tones.append(tone.square)
     if np.array(tones).ndim > 1:
         tones = np.vstack(tones)
         tones = np.sum(tones, axis=0)
@@ -186,6 +214,7 @@ def generate_wave(music):
     """
     wave = np.array([])
     for bar in music:
+        #print(len(generate_tone(bar)))
         wave = np.append(wave, generate_tone(bar))
     return wave
 
@@ -210,7 +239,9 @@ def main():
     into a 2 channel .wav file
     """
     treble = generate_wave(generate_notes(u.treble_path))
+    print('treble:', len(treble))
     bass = generate_wave(generate_notes(u.bass_path))
+    print('bass', len(bass))
     wavfile.write(u.output_path, u.rate,
                   np.column_stack((treble, bass)))
 
