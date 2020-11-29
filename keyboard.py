@@ -41,6 +41,7 @@ As of 2020-11-22
 
 import numpy as np
 import utils as u
+import sys
 from scipy.io import wavfile
 import scipy.signal as ssg
 from frequencies import frequencies
@@ -69,10 +70,15 @@ class SheetMusic:
         Assign notes to instance attribute self.notes
         """
         with open(self.path) as f:
-            raw_music = f.read()
-            raw_music = raw_music.split('\n')
-            self.notes = [entry.split(',') for entry in raw_music
-                          if len(entry) > 0]
+            try:
+                raw_music = f.read()
+            except FileNotFoundError:
+                print(f'Error: {self.path} Not Found')
+                sys.exit()
+            else:
+                raw_music = raw_music.split('\n')
+                self.notes = [entry.split(',') for entry in raw_music
+                              if len(entry) > 0]
 
 
 class Signal:
@@ -144,40 +150,38 @@ class Signal:
         Assigns the array of real values to self.real
         Assigns the array of imaginary values to self.imaginary
         """
-        self.signal = self.amplitude * \
-                      np.exp(1j*self.frequency * self.time_domain * 2.0*np.pi)
+        self.signal = self.amplitude * np.exp(1j*self.frequency *
+                                              self.time_domain * 2.0*np.pi)
 
         if self.decay != 0:
             self.signal = self.signal * np.exp(self.time_domain*(-self.decay))
 
         self.real = np.real(self.signal)
+
         self.imaginary = np.imag(self.signal)
 
     def generate_square(self):
         """
-        Generate the time domain complex representation of the note
-
-        Assigns the array of complex values to self.signal
-        Assigns the array of real values to self.real
-        Assigns the array of imaginary values to self.imaginary
+        Generate the time domain representation of the note
+        as square waveform
         """
-        self.square = ssg.square(2 * np.pi * self.frequency * self.time_domain)
+        self.square = ssg.square(2*np.pi * self.frequency * self.time_domain)
 
         if self.decay != 0:
             self.square = self.square * np.exp(self.time_domain*(-self.decay))
 
     def generate_sawtooth(self):
         """
-        Generate the time domain complex representation of the note
-
-        Assigns the array of complex values to self.signal
-        Assigns the array of real values to self.real
-        Assigns the array of imaginary values to self.imaginary
+        Generate the time domain representation of the note
+        as sawtooth waveform
         """
-        self.sawtooth = ssg.sawtooth(2 * np.pi * self.frequency * self.time_domain)
+        self.sawtooth = ssg.sawtooth(2*np.pi *
+                                     self.frequency * self.time_domain)
 
         if self.decay != 0:
-            self.sawtooth = self.sawtooth * np.exp(self.time_domain*(-self.decay))
+            self.sawtooth = self.sawtooth * \
+                            np.exp(self.time_domain*(-self.decay))
+
 
 def generate_tone(bar):
     """
@@ -192,13 +196,16 @@ def generate_tone(bar):
                        note's signal representation
     """
     tones = []
+
     for note in bar[0].split('+'):
         tone = Signal(note=note, rest=bar[1])
         tone.generate_square()
         tones.append(tone.square)
+
     if np.array(tones).ndim > 1:
         tones = np.vstack(tones)
         tones = np.sum(tones, axis=0)
+
     return tones
 
 
@@ -213,9 +220,10 @@ def generate_wave(music):
         wave: array - 1D array of concatenated signal time domains
     """
     wave = np.array([])
+
     for bar in music:
-        #print(len(generate_tone(bar)))
         wave = np.append(wave, generate_tone(bar))
+
     return wave
 
 
@@ -238,12 +246,45 @@ def main():
     Main function - generate the treble and bass channels then combined
     into a 2 channel .wav file
     """
-    treble = generate_wave(generate_notes(u.treble_path))
-    print('treble:', len(treble))
-    bass = generate_wave(generate_notes(u.bass_path))
-    print('bass', len(bass))
-    wavfile.write(u.output_path, u.rate,
-                  np.column_stack((treble, bass)))
+    flag = []
+
+    try:
+        treble = generate_wave(generate_notes(u.treble_path))
+    except FileNotFoundError:
+        print(f'Warning: {u.treble_path} File Not Found')
+        flag.append('t')
+        treble = None
+    else:
+        print('treble:', len(treble))
+
+    try:
+        bass = generate_wave(generate_notes(u.bass_path))
+    except FileNotFoundError:
+        print(f'Warning: {u.bass_path} File Not Found')
+        flag.append('b')
+        bass = None
+    else:
+        print('bass', len(bass))
+
+    if len(flag) == 2:
+        print('ERROR: Cannot make wav from specified input files')
+        sys.exit()
+
+    elif len(flag) == 1:
+
+        if flag[0] == 't':
+            treble = np.zeros(len(bass))
+            print('Warning: No treble channel can be generated')
+
+        elif flag[0] == 'b':
+            bass = np.zeros(len(treble))
+            print('Warning: No bass channel can be generated')
+
+    try:
+        wavfile.write(u.output_path, u.rate, np.column_stack((treble, bass)))
+    except ValueError:
+        print("Error: Invalid tempo selected")
+        sys.exit()
 
 
 if __name__ == '__main__':
