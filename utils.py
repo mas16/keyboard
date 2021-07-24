@@ -1,20 +1,34 @@
 import os
+import argparse
 from pathlib import Path
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-tr", "--treble",
+                    dest="treble", help='Treble file')
+parser.add_argument("-b", "--bass",
+                    dest="bass", help='Bass file')
+parser.add_argument("-t", "--tempo",
+                    dest="tempo", default=120, help='Tempo in bpm', type=int)
+parser.add_argument("-o", "--out",
+                    dest="out", default="song.wav", help="Wav file name")
+
+args = parser.parse_args()
+
 # Tempo
-tempo: int = 175
+tempo: int = args.tempo
 
 # Output File
-output_file: str = 'test.wav'
+output_file: str = args.out
+
+# Bass sheet music
+bass_file: str = args.bass
+
+# Treble sheet music
+treble_file: str = args.treble
 
 # Set working directory
 base_path: str = os.getcwd()
-
-# Bass sheet music
-bass_file: str = 'tolb.txt'
-
-# Treble sheet music
-treble_file: str = 'tol3.txt'
 
 # File path to bass sheet music file
 bass_path: str = Path(base_path, bass_file)
@@ -25,13 +39,15 @@ treble_path: str = Path(base_path, treble_file)
 # File path to output wav file
 output_path: str = Path(base_path, output_file)
 
+# Group channels
 channels = [treble_path, bass_path]
 
-rate = 2048
+# Digitization
+rate = 2**16
 
 
 def scale_time(dictionary, tempo_value):
-    scale = 120.0 / tempo_value
+    scale = 60 / tempo_value
     for key in dictionary.keys():
         dictionary[key] *= scale
     return dictionary
