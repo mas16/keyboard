@@ -31,13 +31,13 @@ treble_file: str = args.treble
 base_path: str = os.getcwd()
 
 # File path to bass sheet music file
-bass_path: str = Path(base_path, bass_file)
+bass_path = Path(base_path, bass_file)
 
 # File path to treble sheet music file
-treble_path: str = Path(base_path, treble_file)
+treble_path = Path(base_path, treble_file)
 
 # File path to output wav file
-output_path: str = Path(base_path, output_file)
+output_path = Path(base_path, output_file)
 
 # Group channels
 channels = [treble_path, bass_path]

@@ -6,11 +6,11 @@ This module contains the functions used in keyboard.py
 """
 
 import numpy as np
-import utils as u
+import utilities.utils as u
 import sys
 import scipy.signal as ssg
-from frequencies import frequencies
-from timing import fourfour as time_signature
+from utilities.frequencies import frequencies
+from utilities.timing import fourfour as time_signature
 
 
 class SheetMusic:

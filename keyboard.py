@@ -40,9 +40,9 @@ As of 2020-11-22
 """
 
 import sys
-import utils as u
 import numpy as np
-import functions as fu
+import utilities.utils as u
+import utilities.functions as fu
 from scipy.io import wavfile
 
 
