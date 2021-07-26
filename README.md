@@ -1,6 +1,10 @@
 # Python Keyboard
 ## Description
-This Python app creates an audio file from a simple text representation of sheet music. The app currently supports mono (1 channel) and stereo (2 channel) audio.  
+This Python app creates an 8-bit/chiptune audio file from a simple text representation of sheet music. The app currently supports mono (1 channel) and stereo (2 channel) audio.  
+
+## Example Output
+
+
 ## Example Usage  
 ### Sheet Music  
 A musical note and its timing (number of beats) are represented as a single line of text:  
