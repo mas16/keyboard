@@ -18,13 +18,17 @@ Chords are also supported using the `+` operator to link multiple notes together
 Example sheet music files for a 2 channel version of 'Largo' from Dvorak's New World Symphony are provided in this repo: `largo_treble.txt` for the treble channel and `largo_bass.txt` for the bass channel.  
 
 ### Running the App
-The app can be run from the command line. To ensure functionality, first create a virtual environment using the `py36.yml` file. If using Anaconda:    
-```conda env create -f py36.yml```  
+Clone this repo and run the app from the command line. To ensure proper functionality, first create a virtual environment using the `py36.yml` file. If using Anaconda:    
+> ```conda env create -f py36.yml```  
 
 Then activate the environment:  
-```conda activate py36```  
+> ```conda activate py36```  
 
 Run the app using the command line:  
-```python keyboard.py -tr largo_treble.txt -b largo_bass.txt -o largo.wav```  
+> ```python keyboard.py -tr largo_treble.txt -b largo_bass.txt -o largo.wav```  
 
-The complete list of command line arguments is shown below:     
+The complete list of command line arguments is shown below:
+> `-tr` : Path to treble sheet music file  
+> `-b` : Path to bass sheet music file  
+> `-o`: File name for output `.wav` file (include `.wav` extension)  
+> `-t`: Tempo (default is 120 bpm)
