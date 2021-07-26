@@ -28,7 +28,7 @@ Run the app using the command line:
 > ```python keyboard.py -tr largo_treble.txt -b largo_bass.txt -o largo.wav```  
 
 The complete list of command line arguments is shown below:
-> `-tr` : Path to treble sheet music file  
-> `-b` : Path to bass sheet music file  
+> `-tr`: Path to treble sheet music file  
+> `-b`: Path to bass sheet music file  
 > `-o`: File name for output `.wav` file (include `.wav` extension)  
 > `-t`: Tempo (default is 120 bpm)
