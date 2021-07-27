@@ -8,6 +8,8 @@ The logic is derived from nuclear magnetic resonance data processing software I 
 Click the links below to hear some example songs generated using this app:  
 > [Largo](https://soundcloud.com/magn33to/largo)  
 > [One Bread, One Body](https://soundcloud.com/magn33to/one-bread-one-body)  
+> [Good Riddance (Time of Your Life)](https://soundcloud.com/magn33to/good-riddance-time-of-your-life)  
+
 
 ## Example Usage  
 ### Sheet Music  
