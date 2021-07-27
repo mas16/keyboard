@@ -4,8 +4,10 @@ This Python app creates an 8-bit/chiptune audio file from a simple text represen
 
 The logic is derived from nuclear magnetic resonance data processing software I wrote while a grad student.
 
-## Example Output
-
+## Example Songs
+Click the links below to hear some example songs generated using this app:  
+> [Largo](https://soundcloud.com/magn33to/largo)  
+> [One Bread, One Body](https://soundcloud.com/magn33to/one-bread-one-body)  
 
 ## Example Usage  
 ### Sheet Music  
