@@ -2,8 +2,12 @@
 ## Description
 This Python app creates an 8-bit/chiptune audio file from a simple text representation of sheet music. The app currently supports mono (1 channel) and stereo (2 channel) audio.  
 
-## Example Output
+The logic is derived from nuclear magnetic resonance data processing software I wrote while a grad student.
 
+## Example Songs
+Click the links below to hear some example songs generated using this app:  
+> [Largo](https://soundcloud.com/magn33to/largo)  
+> [One Bread, One Body](https://soundcloud.com/magn33to/one-bread-one-body)  
 
 ## Example Usage  
 ### Sheet Music  
